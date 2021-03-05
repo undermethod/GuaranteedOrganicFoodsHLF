@@ -1,4 +1,4 @@
-# BLDC1012 - dApp I - Group Assignment
+# BCDV1012 - dApp I - Group Assignment
 
 ## Hyperledger Fabric - Guaranteed Organic Foods
 
@@ -58,7 +58,7 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
     shipperId: uint,
     timestamp: datetime,
     location: "",
-    containerId,
+    containerId: uint,
     originCountry: "",
     destinationCountry: ""
   },
