@@ -11,7 +11,7 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 - Keep records for the Purchase Order (in our case Box ID), box weight, timestamps, historical statuses and current status
 
 ### State Machine Diagram
-![GOF state diagram]("https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF state diagram.png?raw=true")
+![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF%20state%20diagram.png?raw=true)
 
 ### Transition Descriptions
 - uint boxId = harvest(producerId, weight, location, newPackagerId)
@@ -27,7 +27,7 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 - sell(boxId, isFinalUnit)
 
 ### Flow Chart Diagram
-![GOF flow chart]("https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF flow chart model.png?raw=true")
+![GOF flow chart](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF%20flow%20chart%20model.png?raw=true)
 
 ### State Data
 ```javascript
@@ -97,4 +97,4 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 - Consumer: purchaser of the individual avocados within the box
 
 ### Screenshot
-![GOF screenshot]("https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF screenshot.png?raw=true")
+![GOF screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/GOF%20screenshot.png?raw=true)
