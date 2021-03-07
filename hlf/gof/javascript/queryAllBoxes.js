@@ -41,8 +41,8 @@ async function main() {
         // Get the contract from the network.
         const contract = network.getContract('gof');
 
-        const result = await contract.evaluateTransaction('helloWorld');
-        console.log(`***---*** ${result.toString()} ***---***`);
+        const result = await contract.evaluateTransaction('queryAllBoxes');
+        console.log(`======= queryAllBoxes(): "${result.toString()}" =======`);
 
         // Disconnect from the gateway.
         await gateway.disconnect();

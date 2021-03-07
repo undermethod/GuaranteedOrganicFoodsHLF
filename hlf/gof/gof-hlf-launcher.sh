@@ -12,5 +12,6 @@ cd ..
 cd javascript
 node enrollAdmin
 node registerUsersGOF
-node invokeGOF
-node queryGOF
+node initLedger
+node createBox
+node queryAllBoxes
