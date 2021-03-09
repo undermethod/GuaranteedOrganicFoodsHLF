@@ -1,6 +1,7 @@
 import React from 'react';
-import { Nav, Container, Row, Col, Navbar } from 'react-bootstrap';
+import {Container, Row, Col } from 'react-bootstrap';
 import Login from "./client/login"
+import Services from "./client/services"
 import Logo from "./client/img/logogof_tittle.png";
 import "./client/css/base.css";
 
@@ -8,7 +9,7 @@ class App  extends React.Component {
   constructor(props) {
     super(props);
     this.state = {  
-      
+      panel: <Services/>
     }
 }
   /*clickmenu(key){
@@ -33,12 +34,8 @@ class App  extends React.Component {
               <img src={Logo} alt="Logo"/>
           </Col>
       </Row>
-      <Navbar bg="dark" variant="dark">
-        <Nav className="mr-auto">
-        </Nav>
-      </Navbar>
       <div>
-          <Login></Login>
+          {this.state.panel}
       </div>
     </Container>
     );

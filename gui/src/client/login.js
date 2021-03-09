@@ -1,46 +1,83 @@
 import React from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal, Container, Navbar, Nav} from 'react-bootstrap';
 import './css/base.css';
 
-const { Wallets } = require('fabric-network');
-const path = require('path');
 
 class Login  extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
+            valueuser: "",
+            showAlertLogin:false,
+        }
+        this.validateUser = this.validateUser.bind(this);
+        this.handleCloseLoginAlert = this.handleCloseLoginAlert.bind(this);
+    }
 
+    validateUser(event){
+        event.preventDefault();
+        if(this.state.valueuser !== ''){
+            var url = 'http://localhost:9000/harvest';
+            var data = {username: this.state.valueuser};
+
+            fetch(url, {
+            method: 'POST', // or 'PUT'
+            body: JSON.stringify(data), // data can be `string` or {object}!
+            headers:{
+                'Content-Type': 'application/json'
+            }
+            }).then(res => res.json())
+            .catch(error => console.error('Error:', error))
+            .then(response => {
+                if(response.error !== "Invalid user" ){
+                    console.log('User pass')
+                }else{
+                    this.setState({
+                        showAlertLogin: true,
+                    });
+                }
+        });
         }
     }
 
-    async componentDidMount(){
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
-        // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('appUser');
-        if (userIdentity) {
-            console.log('An identity for the user "appUser" already exists in the wallet');
-            return;
-        }
+    handleCloseLoginAlert(evet){
+        this.setState({
+            showAlertLogin: false,
+        });
     }
 
     render() { 
         return ( 
-            <Form className="marginTop15">
-                <Form.Group controlId="formGroupEmail">
-                    <Form.Label>User address</Form.Label>
-                    <Form.Control type="text" placeholder="Enter user" />
-                </Form.Group>
-                <Form.Group controlId="formGroupPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Sign In
+            <Container>
+                <Navbar bg="dark" variant="dark">
+                    <Nav className="mr-auto">
+                    </Nav>
+                </Navbar>
+                <Form className="marginTop15">
+                    <Form.Group controlId="formGroupEmail">
+                        <Form.Label>User</Form.Label>
+                        <Form.Control type="text" placeholder="Enter user" 
+                            onChange={(e) =>
+                                this.setState({ valueuser: e.target.value })
+                            }
+                        />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" onClick={this.validateUser}>
+                        Sign In
+                    </Button>
+                </Form>
+                <Modal show={this.state.showAlertLogin} onHide={this.handleCloseLoginAlert}>
+                <Modal.Header closeButton>
+                <Modal.Title>Transaction rejected</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Invalid user</Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={this.handleCloseLoginAlert}>
+                    Close
                 </Button>
-            </Form>
-            
+                </Modal.Footer>
+            </Modal>
+          </Container>
         );
     }    
 }
