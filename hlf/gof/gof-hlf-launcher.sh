@@ -15,3 +15,4 @@ node registerUsersGOF
 node initLedger
 node createBox
 node queryAllBoxes
+node query
