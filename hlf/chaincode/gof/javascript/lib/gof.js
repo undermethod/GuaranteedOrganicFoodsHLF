@@ -121,7 +121,7 @@ class Gof extends Contract {
                 resolve('success');
                 console.info('============= END : Create Harvest Record  ===========');
             });
-
+            console.info("xxxxxxxxxxxxxxxxxxxxxx",val)
             return box[0].boxId;
         }
 
