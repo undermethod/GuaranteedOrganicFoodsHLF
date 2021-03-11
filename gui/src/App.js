@@ -9,19 +9,15 @@ class App  extends React.Component {
   constructor(props) {
     super(props);
     this.state = {  
-      panel: <Services/>
+      panel: <Login onlogin={this.services.bind(this)}/>
     }
 }
-  /*clickmenu(key){
-    if(key == 'linkRequest'){
-      this.setState({panel: <RequestLoan/>})
-    }
-    if(key == 'linkPayment'){
-      this.setState({panel: <Payment/>})
-    }
-    panel: <RequestLoan/>,
-    {this.state.panel}
-  }*/
+  services(){
+    this.setState({panel: <Services onlogout={this.login.bind(this)}/>})
+  }
+  login(){
+    this.setState({panel: <Login onlogin={this.services.bind(this)}/>})
+  }
 
   render() { 
   return (

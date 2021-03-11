@@ -6,13 +6,13 @@ class Packaged  extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
-            valueWeight: "",
-            valueLocation:"",
+            pcklocation: "",
+            pckpackerid:"",
         }
-        this.submitHarvest = this.submitHarvest.bind(this);
+        this.submitHarvest = this.submitPackaged.bind(this);
     }
 
-    submitHarvest(evt){
+    submitPackaged(evt){
 
     }
 
@@ -28,20 +28,20 @@ class Packaged  extends React.Component {
                 <Form className="marginTop15">
                     <h3>PACKAGED</h3>
                     <Form.Group>
-                        <Form.Label className="marginTop15">Weight</Form.Label>
-                        <Form.Control type="text" placeholder="Enter weight" 
-                            onChange={(e) =>
-                                this.setState({ valueWeight: e.target.value })
-                            }
-                        />
                         <Form.Label className="marginTop15">Location</Form.Label>
                         <Form.Control type="text" placeholder="Enter location" 
                             onChange={(e) =>
-                                this.setState({ valueLocation: e.target.value })
+                                this.setState({ valueWeight: e.pcklocation.value })
+                            }
+                        />
+                        <Form.Label className="marginTop15">Packager ID</Form.Label>
+                        <Form.Control type="text" placeholder="Enter packager id" 
+                            onChange={(e) =>
+                                this.setState({ valueLocation: e.pckpackerid.value })
                             }
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit" onClick={this.submitHarvest}>Submit</Button>
+                    <Button variant="primary" type="submit" onClick={this.submitPackaged}>Submit</Button>
                 </Form>
           </Container>
         );

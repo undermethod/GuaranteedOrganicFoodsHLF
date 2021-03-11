@@ -1,0 +1,149 @@
+Considerations:
+1- The boxId is string, if you send an integer there is conflict in the queries 
+
+2- Timestamp has to be send from the server
+
+3- All the functions require one specific role and the box has to be in one specific state (check the code of the contract and the state machine)
+
+4- In the case of exportInspection, the contract cannot validate all the requirements for the exportation, the contract just received the data and register it in the ledger. Therefore, the front-end has to send the boolean to determine if the box pass or not the inspection. If the inspection does not pass (false), we have two options, the contract can return false or the contract can call the function sold domestically and return a value that represents the sell. If the contract returns false, the front end should call the function sellDomestically to finish all the process. The current function returns false.
+
+5- In the case of importInspection, the contract cannot validate all the requirements for the exportation, the contract just received the data and register it in the ledger. Therefore, the front-end has to send the boolean to determine if the box pass or not the inspection. If the inspection does not pass, we have two options, the contract can return false or the contract can call the function compost and return a value that represents it. If the contract returns false, the front-end should call the function composte to finish all the process. The current function returns false.
+
+6- Each function updates the state of the box.
+
+Examples of calls to the functions with parameters (query.js)
+
+// Evaluate the specified transaction
+
+	// create and harvest box 1
+        const box1 = await contract.submitTransaction('harvest', 'Producer', '20', 'Cali, Colombia', '1', Date.now());
+        console.log(`The harvest has been evaluated, result is: ${box1}`);
+
+	// create and harvest box 2      
+	const box2 = await contract.submitTransaction('harvest', 'Producer', '201', 'Cali, Colombia', '2', Date.now());
+        console.log(`The harvest has been evaluated, result is: ${box2}`);
+
+	// create and harvest box 3
+	const box3 = await contract.submitTransaction('harvest', 'Producer', '120', 'Psato, Colombia', '3', Date.now());
+	console.log(`The harvest has been evaluated is: ${box3}`);
+
+	//package box1
+	const resultPackBox1 = await contract.submitTransaction('pack', 'Packager', box1, 'Bogota, Colombia', 1, Date.now());
+	console.log(`The packaged  has been evaluated, result is: ${resultPackBox1.toString()}`);
+        
+	//package Box2
+	const resultPackBox2 = await contract.submitTransaction('pack', 'Packager', box2, 'Bogota, Colombia', 2, Date.now());
+	console.log(`The packaged  has been evaluated, result is: ${resultPackBox2.toString()}`);
+
+	//package Box3
+	const resultPackBox3 = await contract.submitTransaction('pack', 'Packager', box3, 'Bogotá, Colombia', 3, Date.now());
+	console.log(`The packaged has been evaluated, result is: ${resultPackBox3.toString()}`);
+
+	//export box1
+	const resultExport = await contract.submitTransaction('exportInspect', 'Exporter', box1 , 2, 'Bogota, Colombia', 1, 'Canada', true,  Date.now());
+	console.log(`The exportation  has been evaluated, result is: ${resultExport.toString()}`);
+        
+	//ship box1
+	const resultShip = await contract.submitTransaction('ship', 'Shipper', box1 , 2, 3, 'Bogota, Colombia',  'Canada',  Date.now());
+	console.log(`The ship  has been evaluated, result is: ${resultShip.toString()}`);
+        
+	//import box1
+	const resultImport = await contract.submitTransaction('importInspect', 'Importer', box1 , 2,  'Canada', 2, 'Colombia', true, Date.now());
+	console.log(`The importation  has been evaluated, result is: ${resultImport.toString()}`);
+        
+	//distribute box1
+	const resultDistribution = await contract.submitTransaction('distribute', 'Distributor', box1 , 2, 'Toronto, Canada', 'Walmart1',  Date.now());
+	console.log(`The distribution  has been evaluated, result is: ${resultDistribution.toString()}`);
+	
+	//stock box1
+	const resultStock = await contract.submitTransaction('stock', 'Retailer', box1 , 2, 'Toronto, Canada', 'Shelf-1',  Date.now());
+	console.log(`The stock  has been evaluated, result is: ${resultStock.toString()}`);
+	
+	//sell box1
+	const resultSell = await contract.submitTransaction('sell', 'Retailer', 'Walmart1',  box1 , Date.now());
+	console.log(`The sell  has been evaluated, result is: ${resultSell.toString()}`);
+
+	//compose box3
+	const resultComposte = await contract.submitTransaction('composte', 'Shipper', box3,  Date.now());
+	console.log(`The composte  has been evaluated, result is: ${resultComposte.toString()}`);
+	
+	//sell domestically box2
+	const resultSellDomestically = await contract.submitTransaction('sellDomestically', 'Exporter', 'Exporter-01', box2,  Date.now());
+	console.log(`The sell domestically  has been evaluated, result is: ${resultSellDomestically.toString()}`);
+
+	//query of one box
+	const resultQuery = await contract.evaluateTransaction('queryBox', box1 );
+        console.log(`The box1 has been consulted, result is: ${resultQuery.toString()}`);
+	
+	//query all boxes
+	const resultQueryAllExport = await contract.evaluateTransaction('queryAllBoxes');
+        console.log(`All boxes have been consulted, result is: ${resultQueryAllExport.toString()}`);
+
+
+Results on the console. Each number represents the number of the box (id)
+
+The harvest has been evaluated, result is: 1
+The harvest has been evaluated, result is: 2
+The harvest has been evaluated is: 3
+The packaged  has been evaluated, result is: 1
+The packaged  has been evaluated, result is: 2
+The packaged has been evaluated, result is: 3
+The exportation  has been evaluated, result is: true
+The ship  has been evaluated, result is: 1
+The importation  has been evaluated, result is: true
+The distribution  has been evaluated, result is: 1
+The stock  has been evaluated, result is: 1
+The sell  has been evaluated, result is: 1
+The composte  has been evaluated, result is: 3
+The sell domestically  has been evaluated, result is: 2
+
+//Result of consulting the box 1. The key of the mapping is the id of the box. There is one substructure for each state of the state machine. The last state of the box1 was sold.
+The box1 has been consulted, result is: 
+[{"boxId":"1","state":"Sold",
+"harvest":[{"weight":"20","loc":"Cali, Colombia","timestamp":"1615480359134","producerId":"1"}],
+"pack":[{"loc":"Bogota, Colombia","packagerId":"1","timestamp":"1615480365453"}],
+"exp":[{"loc":"Bogota, Colombia","exporterId":"2","inspectionAgentId":"1","destinationCountry":"Canada","passInspection":"true","timestamp":"1615480371699"}],
+"ship":[{"shipperId":"2","containerId":"3","originCountry":"Bogota, Colombia","destinationCountry":"Canada","timestamp":"1615480373771"}],
+"import_":[{"loc":"Canada","importerId":"2","inspectionAgentId":"2","originCountry":"Colombia","passInspection":"true","timestamp":"1615480375848"}],
+"distribute":[{"loc":"Toronto, Canada","distributorId":"2","destinationRetailerId":"Walmart1","timestamp":"1615480377924"}],
+"stock":[{"loc":"Toronto, Canada","retailerId":"2","shelfId":"Shelf-1","timestamp":"1615480379999"}],
+"sell":[{"retailerId":"Walmart1","timestamp":"1615480382091"}],
+"composte":[{"role":"","timestamp":""}],
+"sellDomestically":[{"exporterId":"","timestamp":""}]}]
+
+//Result of consulting all boxes. Box 1 has records from state harvest to state sell. Box 2 has records for harvest, package, and sellDomestically. Box 3 has records for harvest, package, and composte.
+All boxes have been consulted, result is: 
+[{"Key":"1",
+	"Record":[{"boxId":"1","state":"Sold",
+	"harvest":[{"weight":"20","loc":"Cali, Colombia","timestamp":"1615480359134","producerId":"1"}],
+	"pack":[{"loc":"Bogota, Colombia","packagerId":"1","timestamp":"1615480365453"}],
+	"exp":[{"loc":"Bogota, Colombia","exporterId":"2","inspectionAgentId":"1","destinationCountry":"Canada","passInspection":"true","timestamp":"1615480371699"}],
+	"ship":[{"shipperId":"2","containerId":"3","originCountry":"Bogota, Colombia","destinationCountry":"Canada","timestamp":"1615480373771"}],
+	"import_":[{"loc":"Canada","importerId":"2","inspectionAgentId":"2","originCountry":"Colombia","passInspection":"true","timestamp":"1615480375848"}],
+	"distribute":[{"loc":"Toronto, Canada","distributorId":"2","destinationRetailerId":"Walmart1","timestamp":"1615480377924"}],
+	"stock":[{"loc":"Toronto, Canada","retailerId":"2","shelfId":"Shelf-1","timestamp":"1615480379999"}],
+	"sell":[{"retailerId":"Walmart1","timestamp":"1615480382091"}],
+	"composte":[{"role":"","timestamp":""}],
+	"sellDomestically":[{"exporterId":"","timestamp":""}]}]},
+{"Key":"2",
+	"Record":[{"boxId":"2","state":"Sold Domestically",
+	"harvest":[{"weight":"201","loc":"Cali, Colombia","timestamp":"1615480361304","producerId":"2"}],
+	"pack":[{"loc":"Bogota, Colombia","packagerId":"2","timestamp":"1615480367536"}],
+	"exp":[{"loc":"","exporterId":"","inspectionAgentId":"","destinationCountry":"","passInspection":false,"timestamp":""}],
+	"ship":[{"shipperId":"","containerId":"","originCountry":"","destinationCountry":"","timestamp":""}],
+	"import_":[{"loc":"","importerId":"","inspectionAgentId":"","originCountry":"","passInspection":"","timestamp":""}],
+	"distribute":[{"loc":"","distributorId":"","destinationRetailerId":"","timestamp":""}],"stock":[{"loc":"","retailerId":"","shelfId":"","timestamp":""}],
+	"sell":[{"retailerId":"","timestamp":""}],
+	"composte":[{"role":"","timestamp":""}],
+	"sellDomestically":[{"exporterId":"Exporter-01","timestamp":"1615480386247"}]}]},
+{"Key":"3",
+	"Record":[{"boxId":"3","state":"Composted",
+	"harvest":[{"weight":"120","loc":"Psato, Colombia","timestamp":"1615480363378","producerId":"3"}],
+	"pack":[{"loc":"Bogotá, Colombia","packagerId":"3","timestamp":"1615480369622"}],
+	"exp":[{"loc":"","exporterId":"","inspectionAgentId":"","destinationCountry":"","passInspection":false,"timestamp":""}],
+	"ship":[{"shipperId":"","containerId":"","originCountry":"","destinationCountry":"","timestamp":""}],
+	"import_":[{"loc":"","importerId":"","inspectionAgentId":"","originCountry":"","passInspection":"","timestamp":""}],
+	"distribute":[{"loc":"","distributorId":"","destinationRetailerId":"","timestamp":""}],"stock":[{"loc":"","retailerId":"","shelfId":"","timestamp":""}],
+	"sell":[{"retailerId":"","timestamp":""}],
+	"composte":[{"role":"Shipper","timestamp":"1615480384165"}],
+	"sellDomestically":[{"exporterId":"","timestamp":""}]}]}]

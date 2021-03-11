@@ -15,9 +15,17 @@
     "author": "Hyperledger",
     "license": "Apache-2.0",
     "dependencies": {
+        "cookie-parser": "~1.4.4",
+        "cors": "^2.8.5",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
         "fabric-ca-client": "^2.2.4",
         "fabric-network": "^2.2.4",
-        "node-gyp": "^7.1.2"
+        "http-errors": "~1.6.3",
+        "jade": "~1.11.0",
+        "morgan": "~1.9.1",
+        "node-gyp": "^7.1.2",
+        "nodemon": "^2.0.7"
     },
     "devDependencies": {
         "chai": "^4.2.0",

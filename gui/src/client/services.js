@@ -8,7 +8,6 @@ import Shipped from "./shipped"
 import Imported from "./imported"
 import Distributed from "./distributed"
 
-
 class Services  extends React.Component {
     constructor(props) {
         super(props);
@@ -20,56 +19,30 @@ class Services  extends React.Component {
     }
 
     clickmenu(key){
-        if(key === 'linkHarvest'){
+        if(key === 'linkHarvest' && localStorage.userValue === 'producer'){
           this.setState({panel: <Harvest/>})
         }
-        if(key === 'linkPackaged'){
+        if(key === 'linkPackaged' && localStorage.userValue === 'packager'){
           this.setState({panel: <Packaged/>})
         }
-        if(key === 'linkExported'){
+        if(key === 'linkExported' && localStorage.userValue === 'exporter'){
           this.setState({panel: <Exported/>})
         }
-        if(key === 'linkShipped'){
+        if(key === 'linkShipped' && localStorage.userValue === 'shipper'){
             this.setState({panel: <Shipped/>})
         }
-        if(key === 'linkImported'){
+        if(key === 'linkImported' && localStorage.userValue === 'importer'){
         this.setState({panel: <Imported/>})
         }
-        if(key === 'linkDistributed'){
+        if(key === 'linkDistributed' && localStorage.userValue === 'distributor'){
         this.setState({panel: <Distributed/>})
         }
-    }
-
-    validateUser(event){
-        event.preventDefault();
-        if(this.state.valueuser !== ''){
-            var url = 'http://localhost:9000/harvest';
-            var data = {username: this.state.valueuser};
-
-            fetch(url, {
-            method: 'POST', // or 'PUT'
-            body: JSON.stringify(data), // data can be `string` or {object}!
-            headers:{
-                'Content-Type': 'application/json'
+        if(key === 'linksignout'){
+            if(this.props.onlogout){
+                delete localStorage.userValue
+                this.props.onlogout()   
             }
-            }).then(res => res.json())
-            .catch(error => console.error('Error:', error))
-            .then(response => {
-                if(response.error !== "Invalid user" ){
-                    console.log('User pass')
-                }else{
-                    this.setState({
-                        showAlertLogin: true,
-                    });
-                }
-        });
         }
-    }
-
-    handleCloseLoginAlert(evet){
-        this.setState({
-            showAlertLogin: false,
-        });
     }
 
     render() { 
@@ -77,12 +50,13 @@ class Services  extends React.Component {
             <Container>
                 <Navbar bg="dark" variant="dark">
                 <Nav className="mr-auto">
-                    <a className="navLink" onClick={this.clickmenu.bind(this, "linkHarvest")}>Harvest</a>
-                    <a className="navLink"onClick={this.clickmenu.bind(this, "linkPackaged")}>Packaged</a>
-                    <a className="navLink"onClick={this.clickmenu.bind(this, "linkExported")}>Exported</a>
-                    <a className="navLink"onClick={this.clickmenu.bind(this, "linkShipped")}>Shipped</a>
-                    <a className="navLink"onClick={this.clickmenu.bind(this, "linkImported")}>Imported</a>
-                    <a className="navLink"onClick={this.clickmenu.bind(this, "linkDistributed")}>Distributed</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkHarvest")}>Harvest</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkPackaged")}>Packaged</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkExported")}>Exported</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkShipped")}>Shipped</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkImported")}>Imported</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkDistributed")}>Distributed</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linksignout")}>Sing Out</a>
                 </Nav>
                 </Navbar>
                 <div>
