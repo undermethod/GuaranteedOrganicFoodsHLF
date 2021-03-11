@@ -16,6 +16,25 @@ class Packaged  extends React.Component {
 
     }
 
+    componentDidMount() {
+        var url = 'http://localhost:9000/querybox';
+        var data = {
+            username: localStorage.userValue, 
+        };
+
+        fetch(url, {
+        method: 'POST', // or 'PUT'
+        body: JSON.stringify(data), // data can be `string` or {object}!
+        headers:{
+            'Content-Type': 'application/json'
+        }
+        }).then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => {
+            console.log(response)
+        });
+    }
+
     handleCloseLoginAlert(evet){
         this.setState({
             showAlertLogin: false,
