@@ -36,339 +36,317 @@ const roles = {
 
 var initialState;
 var id;
-var gofNumber;
 
-class GOF extends Contract {
+class Gof extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         initialState = states.READYPICKUP;
         id = 1;
-        gofNumber = "";
         console.info('============= END : Initialize Ledger ===========');
     }
 
-    async createBox(ctx, weight, timestamp){
-	console.info('======= START : Create a box ========');
-	const box = {
-	      boxId: id.toString(),
-              weight,
-	      timestamp,
-              state: states.READYPICKUP,	
-	};
-	console.info('========= increase id ============');
-	id++;
-	console.info('========= befor to register =========');
-        await ctx.stub.putState(box.boxId, Buffer.from(JSON.stringify(box)));
-	console.info('====== END : Create a box =========');
-	return box.boxId;	
-    }
-
-    async harvest(ctx, role, weight, loc, producerId,timestamp) {
+    async harvest(ctx, role, weight, loc, producerId, timestamp) {
         console.info('============= START : Create Harvest Record ===========');
-	
-        if(role == roles.PRODUCER && initialState == states.READYPICKUP){
-            const boxId = await this.createBox(ctx, weight, timestamp);
-	    const harvest = {
-                boxId,
-                loc,
-                timestamp,
-		producerId,
-		state: states.HARVEST,
-            };
-            gofNumber = "HAV-"+ boxId;
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(harvest)));
-            console.info('============= END : Create Harvest Record  ===========');
-	    //await this.queryAllBoxes(ctx);
-	    //await this.changeBoxState(ctx, boxId, states.HARVEST);
-              
-            return boxId;
+
+        if (role == roles.PRODUCER && initialState == states.READYPICKUP) {
+
+            const box = [{
+                boxId: id.toString(),
+                state: states.HARVEST,
+                harvest: [{
+                    weight,
+                    loc,
+                    timestamp,
+                    producerId
+                }],
+                pack: [{
+                    loc: "",
+                    packagerId: "",
+                    timestamp: ""
+                }],
+                exp: [{
+                    loc: "",
+                    exporterId: "",
+                    inspectionAgentId: "",
+                    destinationCountry: "",
+                    passInspection: false,
+                    timestamp: ""
+                }],
+                ship: [{
+                    shipperId: "",
+                    containerId: "",
+                    originCountry: "",
+                    destinationCountry: "",
+                    timestamp: ""
+                }],
+                import_: [{
+                    loc: "",
+                    importerId: "",
+                    inspectionAgentId: "",
+                    originCountry: "",
+                    passInspection: "",
+                    timestamp: ""
+                }],
+                distribute: [{
+                    loc: "",
+                    distributorId: "",
+                    destinationRetailerId: "",
+                    timestamp: ""
+                }],
+                stock: [{
+                    loc: "",
+                    retailerId: "",
+                    shelfId: "",
+                    timestamp: ""
+                }],
+                sell: [{
+                    retailerId: "",
+                    timestamp: ""
+                }],
+                composte: [{
+                    role: "",
+                    timestamp: ""
+                }],
+                sellDomestically: [{
+                    exporterId: "",
+                    timestamp: ""
+                }]
+
+            }];
+            id++;
+
+            const val = await new Promise(async (resolve, reject) => {
+                ctx.stub.putState(box[0].boxId, Buffer.from(JSON.stringify(box)))
+                resolve('success');
+                console.info('============= END : Create Harvest Record  ===========');
+            });
+
+            return box[0].boxId;
         }
-        else{
+
+        else {
             return -1;
         }
-        
+
+    }
+
+    async queryBoxState(ctx, boxId) {
+        const box = await ctx.stub.getState(boxId)
+        if (!box || box.lenght == 0) {
+            throw new Error(Box - `${boxId} does not exist`);
+        }
+        return box; // get the digital financial bond from chaincode state
     }
 
     async pack(ctx, role, boxId, loc, packagerId, timestamp) {
         console.info('============= START : Create Package Transaction===========');
-        var boxQuery = await this.queryBoxState(ctx,boxId);
-        console.info('===== box query: '+String(boxQuery));        	
-        if(role == roles.PACKAGER && boxQuery  == states.HARVEST){
-            gofNumber = "PAC-"+ boxId;
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
 
-            const pack = {
-		boxId,
-                loc,
-                timestamp,
-                packagerId,               
-                state: states.PACKAGED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(pack)));
+        if (role == roles.PACKAGER && box[0].state == states.HARVEST) {
+
+            box[0].pack[0].loc = loc;
+            box[0].pack[0].packagerId = packagerId;
+            box[0].pack[0].timestamp = timestamp;
+            box[0].state = states.PACKAGED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
             console.info('============= END : Create Package Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Packaged =======');
-	    //await this.changeBoxState(ctx, boxId, states.PACKAGED);
-            //console.info('=========== END : Change state of the box to Packaged ======');
- 
-            return gofNumber;
+
+            return boxId;
         }
-        else{
+        else {
             return -1;
         }
+    }
 
-    } 
+    async exportInspect(ctx, role, boxId, exporterId, loc, inspectionAgentId, destinationCountry, passInspection, timestamp) {
+        console.info('======= START : Create Exportation Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
 
-   async exportInspect(ctx, role, boxId, exporterId,  loc, inspectionAgentId, destinationCountry, passInspection, timestamp){
-   	console.info('======= START : Create Exportation Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.EXPORTER && boxQuery  == states.PACKAGED && passInspection){
-            gofNumber = "EXP-"+ boxId;
+        if (role == roles.EXPORTER && box[0].state == states.PACKAGED && passInspection) {
 
-            const exp = {
-		boxId,
-                loc,
-                timestamp,
-                exporterId,
-		inspectionAgentId,
-		destinationCountry,
-		passInspection,               
-                state: states.EXPORTED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(exp)));
+            box[0].exp[0].loc = loc;
+            box[0].exp[0].exporterId = exporterId;
+            box[0].exp[0].inspectionAgentId = inspectionAgentId;
+            box[0].exp[0].destinationCountry = destinationCountry;
+            box[0].exp[0].passInspection = passInspection;
+            box[0].exp[0].timestamp = timestamp;
+            box[0].state = states.EXPORTED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
             console.info('============= END : Create Exportation  Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Exported =======');
-	    //await this.changeBoxState(ctx, boxId, states.EXPORTED);
-            //console.info('=========== END : Change state of the box to Exported  ======');
- 
-            return gofNumber;
+
+            return true;
         }
-        else{
+        else {
             return false;
-        }						
-   } 
+        }
+    }
 
-   async ship(ctx, role, boxId, shipperId, containerId, originCountry, destinationCountry, timestamp){
-   	console.info('======= START : Create Ship Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.SHIPPER && boxQuery  == states.EXPORTED){
-            gofNumber = "SHI-"+ boxId;
+    async ship(ctx, role, boxId, shipperId, containerId, originCountry, destinationCountry, timestamp) {
+        console.info('======= START : Create Ship Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
 
-            const ship = {
-		boxId,
-                timestamp,
-                shipperId,
-		containerId,
-		originCountry,
-		destinationCountry,	      
-                state: states.SHIPPED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(ship)));
+        if (role == roles.SHIPPER && box[0].state == states.EXPORTED) {
+
+            box[0].ship[0].shipperId = shipperId;
+            box[0].ship[0].containerId = containerId;
+            box[0].ship[0].originCountry = originCountry;
+            box[0].ship[0].destinationCountry = destinationCountry;
+            box[0].ship[0].timestamp = timestamp;
+            box[0].state = states.SHIPPED,
+
+                await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
             console.info('============= END : Create Ship  Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Shipped  =======');
-	    //await this.changeBoxState(ctx, boxId, states.SHIPPED);
-            //console.info('=========== END : Change state of the box to Shipped ======');
- 
-            return gofNumber;
+
+            return boxId;
         }
-        else{
+        else {
             return -1;
         }
-						
-   } 
 
-    async importInspect(ctx, role, boxId, importerId,  loc, inspectionAgentId, originCountry, passInspection, timestamp){
-   	console.info('======= START : Create Importation Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.IMPORTER && boxQuery  == states.SHIPPED && passInspection){
-            gofNumber = "IMP-"+ boxId;
+    }
 
-            const imp = {
-		boxId,
-                loc,
-                timestamp,
-                importerId,
-		inspectionAgentId,
-		originCountry,
-		passInspection,               
-                state: states.IMPORTED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(imp)));
+    async importInspect(ctx, role, boxId, importerId, loc, inspectionAgentId, originCountry, passInspection, timestamp) {
+        console.info('======= START : Create Importation Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
+
+        if (role == roles.IMPORTER && box[0].state == states.SHIPPED && passInspection) {
+
+            box[0].import_[0].loc = loc;
+            box[0].import_[0].importerId = importerId;
+            box[0].import_[0].inspectionAgentId = inspectionAgentId;
+            box[0].import_[0].originCountry = originCountry;
+            box[0].import_[0].passInspection = passInspection;
+            box[0].import_[0].timestamp = timestamp;
+            box[0].state = states.IMPORTED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
+
             console.info('============= END : Create Importation  Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Imported =======');
-	    //await this.changeBoxState(ctx, boxId, states.IMPORTED);
-            //console.info('=========== END : Change state of the box to Imported  ======');
- 
-            return gofNumber;
+
+            return true;
         }
-        else{
+        else {
             return false;
-        }						
-   } 
+        }
+    }
 
-    async distribute(ctx, role, boxId, distributorId,  loc, destinationRetailerId, timestamp){
-   	console.info('======= START : Create Distribution Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.DISTRIBUTOR && boxQuery  == states.IMPORTED){
-            gofNumber = "DIS-"+ boxId;
+    async distribute(ctx, role, boxId, distributorId, loc, destinationRetailerId, timestamp) {
+        console.info('======= START : Create Distribution Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
 
-            const dis = {
-		boxId,
-                loc,
-                timestamp,
-                distributorId,
-		destinationRetailerId,          
-                state: states.DISTRIBUTED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(dis)));
+        if (role == roles.DISTRIBUTOR && box[0].state == states.IMPORTED) {
+
+            box[0].distribute[0].loc = loc;
+            box[0].distribute[0].distributorId = distributorId;
+            box[0].distribute[0].destinationRetailerId = destinationRetailerId;
+            box[0].distribute[0].timestamp = timestamp;
+            box[0].state = states.DISTRIBUTED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
             console.info('============= END : Create Distribution  Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Distributed =======');
-	    //await this.changeBoxState(ctx, boxId, states.DISTRIBUTED);
-            //console.info('=========== END : Change state of the box to Distributed  ======');
- 
-            return gofNumber;
+
+            return boxId;
         }
-        else{
+        else {
             return -1;
-        }						
-   }
+        }
+    }
 
-    async stock(ctx, role, boxId, retailerId, loc, shelfId, timestamp){
-   	console.info('======= START : Create Stock Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.RETAILER && boxQuery  == states.DISTRIBUTED){
-            gofNumber = "STO-"+ boxId;
+    async stock(ctx, role, boxId, retailerId, loc, shelfId, timestamp) {
+        console.info('======= START : Create Stock Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
 
-            const sto = {
-		boxId,
-		retailerId,
-                loc,
-                timestamp,
-                shelfId,		      
-                state: states.STOCKED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(sto)));
+        if (role == roles.RETAILER && box[0].state == states.DISTRIBUTED) {
+
+            box[0].stock[0].loc = loc;
+            box[0].stock[0].retailerId = retailerId;
+            box[0].stock[0].shelfId = shelfId;
+            box[0].stock[0].timestamp = timestamp;
+            box[0].state = states.STOCKED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
             console.info('============= END : Create Stock  Transaction  ===========');
-            
-	    //console.info('============ START :  Change state of the box to Stock =======');
-	    //await this.changeBoxState(ctx, boxId, states.STOCKED);
-            //console.info('=========== END : Change state of the box to Stock  ======');
- 
-            return gofNumber;
+
+            return boxId;
         }
-        else{
+        else {
             return -1;
-        }						
-   }
-
-    async sell(ctx, role, retailerId, boxId, timestamp){
-   	console.info('======= START : Create Sell  Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.RETAILER && boxQuery  == states.STOCKED){
-            gofNumber = "SEL-"+ boxId;
-
-            const sel = {
-		timestamp,
-                retailerId,		    
-                state: states.SOLD,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(sel)));
-            console.info('============= END : Create Sell  Transaction  ===========');    
-
-	    //console.info('============ START :  Change state of the box to sold =======');
-	    //await this.changeBoxState(ctx, boxId, states.SOLD);
-            //console.info('=========== END : Change state of the box to Composte  ======');
-  
-            return gofNumber;
         }
-        else{
+    }
+
+    async sell(ctx, role, retailerId, boxId, timestamp) {
+        console.info('======= START : Create Sell  Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
+
+        if (role == roles.RETAILER && box[0].state == states.STOCKED) {
+
+            box[0].sell[0].retailerId = retailerId;
+            box[0].sell[0].timestamp = timestamp;
+            box[0].state = states.SOLD;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
+            console.info('============= END : Create Sell  Transaction  ===========');
+
+            return boxId;
+        }
+        else {
             return -1;
-        }						
-   }
-
-  async composte(ctx, role, userId, boxId, timestamp){
-   	console.info('======= START : Create Composte  Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.SHIPPER || role==roles.IMPORTER || role== roles.DISTRIBUTOR || role== roles.RETAILER ){// && boxQuery  == states.HARVEST){
-            gofNumber = "COM-"+ boxId;
-
-            const com = {
-		timestamp,
-                userId,
-		boxId,		    
-                state: states.COMPOSTED,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(com)));
-            console.info('============= END : Create Composte  Transaction  ===========');    
-	    
-	    //console.info('============ START :  Change state of the box to Composte =======');
-	    //await this.changeBoxState(ctx, boxId, states.COMPOSTED);
-            //console.info('=========== END : Change state of the box to Composte  ======');
- 
-            return gofNumber;
         }
-        else{
+    }
+
+    async composte(ctx, role, boxId, timestamp) {
+        console.info('======= START : Create Composte  Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
+
+        if (role == roles.SHIPPER || role == roles.IMPORTER || role == roles.DISTRIBUTOR || role == roles.RETAILER) {// && boxQuery  == states.HARVEST){
+
+            box[0].composte[0].role = role;
+            box[0].composte[0].timestamp = timestamp;
+            box[0].state = states.COMPOSTED;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
+            console.info('============= END : Create Composte  Transaction  ===========');
+
+            return boxId;
+        }
+        else {
             return -1;
-        }						
-   }
-
-  async sellDomestically(ctx, role, exporterId, boxId, timestamp){
-   	console.info('======= START : Create Sell Domestically  Transaction');
-	var boxQuery = await this.queryBoxState(ctx,boxId);
-                	
-        if(role == roles.EXPORTER && boxQuery  == states.PACKAGED){
-            gofNumber = "SED-"+ boxId;
-
-            const sed = {
-		timestamp,
-                exporterId,
-		boxId,		    
-                state: states.SOLDDOMESTICALLY,
-	    };
-            	    
-            await ctx.stub.putState(gofNumber, Buffer.from(JSON.stringify(sed)));
-            console.info('============= END : Create Sell Domestically  Transaction  ===========');    
-	    
-	    //console.info('============ START :  Change state of the box to Sell domestically =======');
-	    //await this.changeBoxState(ctx, boxId, states.SOLDDOMESTICALLY);
-            //console.info('=========== END : Change state of the box to Sell Domestically  ======');
- 
-            return gofNumber;
         }
-        else{
+    }
+
+    async sellDomestically(ctx, role, exporterId, boxId, timestamp) {
+        console.info('======= START : Create Sell Domestically  Transaction');
+        var boxQuery = await this.queryBoxState(ctx, boxId);
+        const box = JSON.parse(boxQuery.toString());
+
+        if (role == roles.EXPORTER && box[0].state == states.PACKAGED) {
+
+            box[0].sellDomestically[0].exporterId = exporterId;
+            box[0].sellDomestically[0].timestamp = timestamp;
+            box[0].state = states.SOLDDOMESTICALLY;
+
+            await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(box)));
+            console.info('============= END : Create Sell Domestically  Transaction  ===========');
+
+            return boxId;
+        }
+        else {
             return -1;
-        }						
-   }
-
-	async queryBoxState(ctx, boxId) {
-        const box = await ctx.stub.getState(boxId)
-        if(!box || box.lenght == 0){
-            throw new Error (`${boxId} does not exist`);
         }
-        console.info('======= box object: '+ String(JSON.parse(box).state) + ' =========');
-        return String(JSON.parse(box).state); // get the digital financial bond from chaincode state
-   }
-	
-   async queryBox(ctx, boxId) {
+    }
+
+    async queryBox(ctx, boxId) {
         const dfbAsBytes = await ctx.stub.getState(boxId); // get the digital financial bond from chaincode state
         if (!dfbAsBytes || dfbAsBytes.length === 0) {
             throw new Error(`${boxId} does not exist`);
@@ -381,7 +359,7 @@ class GOF extends Contract {
         const startKey = '';
         const endKey = '';
         const allResults = [];
-        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+        for await (const { key, value } of ctx.stub.getStateByRange(startKey, endKey)) {
             const strValue = Buffer.from(value).toString('utf8');
             let record;
             try {
@@ -396,24 +374,8 @@ class GOF extends Contract {
         return JSON.stringify(allResults);
     }
 
-    async changeBoxState(ctx, boxId, newState) {
-        console.info('============= START : changeBoxState ===========');
-        console.info('==== boxIdChangeState:'+ boxId);	
-	console.info('===== data type variable: '+ typeof boxId);
-        const box = await ctx.stub.getState(boxId); // get the box from chaincode state
-	console.info('===== box: '+ box.toString());
-        if (!box || box.length === 0) {
-            throw new Error(`Box ${boxId} does not exist`);
-        }
-        const queryBox = JSON.parse(box.toString());
-        queryBox.state = newState;
-
-        await ctx.stub.putState(boxId, Buffer.from(JSON.stringify(queryBox)));
-        console.info('============= END : changeBoxState ===========');
-    }
-
 }
 
-module.exports = GOF;
+module.exports = Gof;
 
 
