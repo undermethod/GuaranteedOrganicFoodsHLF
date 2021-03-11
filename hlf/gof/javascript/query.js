@@ -40,10 +40,13 @@ async function main() {
         const contract = network.getContract('gof');
 
         // Evaluate the specified transaction.
-        // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
-        // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
-        const result = await contract.evaluateTransaction('queryAllCars');
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+        // queryBox transaction - requires 1 argument, ex: ('queryBox', '')
+        // queryAllBoxes transaction - requires no arguments, ex: ('queryAllBoxes')
+	const box1 = await contract.submitTransaction('harvest', 'Producer', '20', 'Cali, Colombia', '1', Date.now());
+	// const result = await contract.evaluateTransaction('queryBox', 'box1');
+	//console.log(`Transaction has been evaluated, result is: ${box1}`);
+	const resultQueryAllExport = await contract.evaluateTransaction('queryAllBoxes');	
+	console.log(`All boxes have been consulted, result is: ${resultQueryAllExport.toString()}`);
 
         // Disconnect from the gateway.
         await gateway.disconnect();
