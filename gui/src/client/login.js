@@ -29,8 +29,11 @@ class Login  extends React.Component {
             }).then(res => res.json())
             .catch(error => console.error('Error:', error))
             .then(response => {
-                if(response.error !== "Invalid user" ){
-                    console.log('User pass')
+                if(response.error !== "Invalid user"){
+                    if(this.props.onlogin){
+                        localStorage.userValue = this.state.valueuser
+                        this.props.onlogin()   
+                    }
                 }else{
                     this.setState({
                         showAlertLogin: true,
