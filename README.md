@@ -5,7 +5,7 @@
 ### Project Description
 Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Organic Foods (GOF) traces the exportation of avocados from Colombia to Canada, from the farmer to the consumer.
 
-### Requirements
+### Requirements (Check)
 - Track and trace avocados _from farm to table_
 - Allow various business actors to have access for transparency and traceability
 - Keep records for the Purchase Order (in our case Box ID), box weight, timestamps, historical statuses and current status
@@ -13,7 +13,7 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 ### State Machine Diagram
 ![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20state%20diagram.png?raw=true)
 
-### Transition Descriptions
+### Transition Descriptions (Check)
 - uint boxId = harvest(producerId, weight, location, newPackagerId)
 - queryBox(boxId)
 - package(boxId, location)
