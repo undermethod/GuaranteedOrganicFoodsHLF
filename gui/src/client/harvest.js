@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Container} from 'react-bootstrap';
+import { Button, Form, Container, Modal} from 'react-bootstrap';
 import './css/base.css';
 
 class Harvest  extends React.Component {
@@ -10,8 +10,10 @@ class Harvest  extends React.Component {
             valueWeight: "",
             valueLocation:"",
             valueproducerID:"",
+            showAlertTransaction:false,
         }
         this.submitHarvest = this.submitHarvest.bind(this);
+        this.handleCloseTransactionAlert = this.handleCloseTransactionAlert.bind(this); 
     }
 
     submitHarvest(evt){
@@ -37,13 +39,14 @@ class Harvest  extends React.Component {
                     valueWeight: "",
                     valueLocation:"",
                     valueproducerID:"",
+                    showAlertTransaction :true,
                 })
         });
     }
 
-    handleCloseLoginAlert(evet){
+    handleCloseTransactionAlert(evet){
         this.setState({
-            showAlertLogin: false,
+            showAlertTransaction: false,
         });
     }
 
@@ -74,6 +77,17 @@ class Harvest  extends React.Component {
                     </Form.Group>
                     <Button variant="primary" type="submit" onClick={this.submitHarvest}>Submit</Button>
                 </Form>
+                <Modal show={this.state.showAlertTransaction} onHide={this.handleCloseTransactionAlert}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Transaction approved</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Transaction successful</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleCloseTransactionAlert}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
           </Container>
         );
     }    

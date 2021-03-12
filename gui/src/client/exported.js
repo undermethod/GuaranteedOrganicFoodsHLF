@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Container} from 'react-bootstrap';
+import { Button, Form, Container, Modal} from 'react-bootstrap';
 import './css/base.css';
 
 class Exported  extends React.Component {
@@ -13,10 +13,12 @@ class Exported  extends React.Component {
             exporterlocation: "",
             valueInspectionAgentId:"",
             valueDestinationCountry:"",
+            showAlertTransaction:false,
         }
         this.submitExported = this.submitExported.bind(this);
         this.handleChangeSelectBox = this.handleChangeSelectBox.bind(this);
         this.handleChangeSelectInspection = this.handleChangeSelectInspection.bind(this);
+        this.handleCloseTransactionAlert = this.handleCloseTransactionAlert.bind(this); 
     }
 
     submitExported(){
@@ -49,6 +51,7 @@ class Exported  extends React.Component {
                     exporterlocation:"",
                     valueInspectionAgentId:"",
                     valueDestinationCountry:"",
+                    showAlertTransaction:true,
                 })
         });
     }
@@ -61,6 +64,12 @@ class Exported  extends React.Component {
         this.setState({ valueSelecInspectiont: event.target.value });
     }
       
+    handleCloseTransactionAlert(evet){
+        this.setState({
+            showAlertTransaction: false,
+        });
+    }
+
     componentDidMount() {
         var url = 'http://localhost:9000/querybox';
         var data = {
@@ -99,25 +108,25 @@ class Exported  extends React.Component {
                             )}
                         </Form.Control>
                         <Form.Label className="marginTop15">Exporter Id</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Exporter Id" 
+                        <Form.Control type="text" placeholder="Enter Exporter Id" value={this.state.valueExporterId}
                             onChange={(e) =>
                                 this.setState({ valueExporterId: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Location</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Location" 
+                        <Form.Control type="text" placeholder="Enter Location" value={this.state.exporterlocation}
                             onChange={(e) =>
                                 this.setState({ exporterlocation: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Inspection Agent Id</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Inspection Agent Id" 
+                        <Form.Control type="text" placeholder="Enter Inspection Agent Id" value={this.state.valueInspectionAgentId}
                             onChange={(e) =>
                                 this.setState({ valueInspectionAgentId: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Destination Country</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Destination Country" 
+                        <Form.Control type="text" placeholder="Enter Destination Country" value={this.state.valueDestinationCountry}
                             onChange={(e) =>
                                 this.setState({ valueDestinationCountry: e.target.value })
                             }
@@ -131,6 +140,17 @@ class Exported  extends React.Component {
                     </Form.Group>
                     <Button variant="primary" type="submit" onClick={this.submitExported}>Submit</Button>
                 </Form>
+                <Modal show={this.state.showAlertTransaction} onHide={this.handleCloseTransactionAlert}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Transaction approved</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Transaction successful</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleCloseTransactionAlert}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
           </Container>
         );
     }

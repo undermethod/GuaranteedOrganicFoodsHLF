@@ -150,6 +150,80 @@ router.post('/ship', async function(req, res, next) {
     });    
 });
 
+router.post('/imported', async function(req, res, next) {
+    validateUser(req.body.username).then( async isvalid => {
+        if(!isvalid){
+            res.json({error: 'Invalid user'});
+        }else{
+            try {
+                const wallet = await Wallets.newFileSystemWallet(walletPath);
+                // Create a new gateway for connecting to our peer node.
+                const gateway = new Gateway();
+                await gateway.connect(ccp, { wallet, identity: req.body.username, discovery: { enabled: true, asLocalhost: true } });
+
+                // Get the network (channel) our contract is deployed to.
+                const network = await gateway.getNetwork('gofchannel');
+
+                // Get the contract from the network.
+                const contract = network.getContract('gof');
+                //importInspect(ctx, role, boxId, importerId, loc, inspectionAgentId, originCountry, passInspection, timestamp)
+                console.log(`'importInspect', 'Importer', ${req.body.boxId}, ${req.body.shipperId}, ${req.body.containerId} , ${req.body.originCountry}, 
+                ${req.body.destinationCountry}`)
+                const result = await contract.submitTransaction('importInspect', 'Importer', 
+                    req.body.boxId, 
+                    req.body.importerId, 
+                    req.body.loc, 
+                    req.body.inspectionAgentId,
+                    req.body.originCountry,
+                    req.body.passInspection,
+                    Date.now())
+                console.log(`Transaction importInspect has been evaluated, result is: ${result.toString()}`);
+                //changeBoxState(ctx, boxId, newState)
+                res.json(JSON.parse(result.toString()));  
+            } catch (error) {
+                console.error(`Failed to evaluate transaction: ${error}`);
+                res.json({error: 'Error user'});
+            }   
+        }    
+    });    
+});
+
+router.post('/distributed', async function(req, res, next) {
+    validateUser(req.body.username).then( async isvalid => {
+        if(!isvalid){
+            res.json({error: 'Invalid user'});
+        }else{
+            try {
+                const wallet = await Wallets.newFileSystemWallet(walletPath);
+                // Create a new gateway for connecting to our peer node.
+                const gateway = new Gateway();
+                await gateway.connect(ccp, { wallet, identity: req.body.username, discovery: { enabled: true, asLocalhost: true } });
+
+                // Get the network (channel) our contract is deployed to.
+                const network = await gateway.getNetwork('gofchannel');
+
+                // Get the contract from the network.
+                const contract = network.getContract('gof');
+                //distribute(ctx, role, boxId, distributorId, loc, destinationRetailerId, timestamp)
+                console.log(`'distribute', 'Distributor', ${req.body.boxId}, ${req.body.distributorId}, ${req.body.loc} , ${req.body.destinationRetailerId}`)
+                const result = await contract.submitTransaction('distribute', 'Distributor', 
+                    req.body.boxId, 
+                    req.body.distributorId, 
+                    req.body.loc, 
+                    req.body.destinationRetailerId,
+                    Date.now())
+                console.log(`Transaction Distributed has been evaluated, result is: ${result.toString()}`);
+                //changeBoxState(ctx, boxId, newState)
+                res.json(JSON.parse(result.toString()));  
+            } catch (error) {
+                console.error(`Failed to evaluate transaction: ${error}`);
+                res.json({error: 'Error user'});
+            }   
+        }    
+    });    
+});
+
+
 router.post('/querybox', async function(req, res, next) {
     let d = new Date();
     let timestamp = d.getTime();

@@ -56,7 +56,7 @@ class Services  extends React.Component {
                     <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkShipped")}>Shipped</a>
                     <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkImported")}>Imported</a>
                     <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linkDistributed")}>Distributed</a>
-                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linksignout")}>Sing Out</a>
+                    <a className="navLink" href='#' onClick={this.clickmenu.bind(this, "linksignout")}>Sign Out</a>
                 </Nav>
                 </Navbar>
                 <div>

@@ -70,16 +70,16 @@ class Login  extends React.Component {
                     </Button>
                 </Form>
                 <Modal show={this.state.showAlertLogin} onHide={this.handleCloseLoginAlert}>
-                <Modal.Header closeButton>
-                <Modal.Title>Transaction rejected</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Invalid user</Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={this.handleCloseLoginAlert}>
-                    Close
-                </Button>
-                </Modal.Footer>
-            </Modal>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Transaction rejected</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Invalid user</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleCloseLoginAlert}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
           </Container>
         );
     }    

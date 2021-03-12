@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Container} from 'react-bootstrap';
+import { Button, Form, Container, Modal} from 'react-bootstrap';
 import './css/base.css';
 class Packaged  extends React.Component {
     constructor(props) {
@@ -8,10 +8,12 @@ class Packaged  extends React.Component {
             pcklocation: "",
             pckpackerid:"",
             valueBoxes:[],
-            valueSelect:""
+            valueSelect:"",
+            showAlertTransaction:false,
         }
         this.submitPackaged = this.submitPackaged.bind(this);
         this.handleChangeSelectBox = this.handleChangeSelectBox.bind(this);
+        this.handleCloseTransactionAlert = this.handleCloseTransactionAlert.bind(this); 
     }
 
     submitPackaged(){
@@ -35,6 +37,12 @@ class Packaged  extends React.Component {
         .catch(error => console.error('Error:', error))
         .then(response => {
                 console.log(response)
+                this.setState({
+                    pcklocation: "",
+                    pckpackerid:"",
+                    valueSelect:"",
+                    showAlertTransaction:true,
+                })
         });
     }
 
@@ -42,6 +50,11 @@ class Packaged  extends React.Component {
         this.setState({ valueSelect: event.target.value });
       }
     
+    handleCloseTransactionAlert(evet){
+        this.setState({
+            showAlertTransaction: false,
+        });
+    }
 
     componentDidMount() {
         var url = 'http://localhost:9000/querybox';
@@ -81,13 +94,13 @@ class Packaged  extends React.Component {
                         )}
                     </Form.Control>
                         <Form.Label className="marginTop15">Location</Form.Label>
-                        <Form.Control type="text" placeholder="Enter location" 
+                        <Form.Control type="text" placeholder="Enter location"  value={this.state.pcklocation}
                             onChange={(e) =>
                                 this.setState({ pcklocation: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Packager ID</Form.Label>
-                        <Form.Control type="text" placeholder="Enter packager id" 
+                        <Form.Control type="text" placeholder="Enter packager id"  value={this.state.pckpackerid}
                             onChange={(e) =>
                                 this.setState({ pckpackerid: e.target.value })
                             }
@@ -95,6 +108,17 @@ class Packaged  extends React.Component {
                     </Form.Group>
                     <Button variant="primary" type="submit" onClick={this.submitPackaged}>Submit</Button>
                 </Form>
+                <Modal show={this.state.showAlertTransaction} onHide={this.handleCloseTransactionAlert}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Transaction approved</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Transaction successful</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleCloseTransactionAlert}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
           </Container>
         );
     }    
