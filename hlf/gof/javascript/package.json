@@ -23,7 +23,7 @@
         "http-errors": "~1.6.3",
         "jade": "~1.11.0",
         "morgan": "~1.9.1",
-        "node-gyp": "^7.1.2",
+        "node-gyp": "^7.1.2"
     },
     "devDependencies": {
         "chai": "^4.2.0",
