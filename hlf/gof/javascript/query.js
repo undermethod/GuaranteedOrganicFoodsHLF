@@ -42,13 +42,13 @@ async function main() {
         // Evaluate the specified transaction.
         // queryBox transaction - requires 1 argument, ex: ('queryBox', '')
         // queryAllBoxes transaction - requires no arguments, ex: ('queryAllBoxes')
-	//const box1 = await contract.submitTransaction('harvest', 'Producer', '20', 'Cali, Colombia', '1', Date.now());
+	const box1 = await contract.submitTransaction('harvest', 'Producer', '20', 'Cali, Colombia', '1', Date.now());
 	// const result = await contract.evaluateTransaction('queryBox', 'box1');
 	//console.log(`Transaction has been evaluated, result is: ${box1}`);
 	
-	//update state box1 from Ready to Pickup to Harvest       
-	const resultUpdateBox1H = await contract.submitTransaction('changeBoxState', '1', 'Harvest');
-	console.log(`All boxes have been consulted, result is: ${resultUpdateBox1H.toString()}`);
+	       
+	
+	
 	const resultQueryAllExport = await contract.evaluateTransaction('queryAllBoxes');	
 	console.log(`All boxes have been consulted, result is: ${resultQueryAllExport.toString()}`);
 
