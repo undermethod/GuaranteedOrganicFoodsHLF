@@ -29,11 +29,14 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 ### Flow Chart Diagram
 ![GOF flow chart](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20flow%20chart%20model.png?raw=true)
 
+### Architecture (Include)
+- Diagram of the layers and integration of the components
+- Architectural decisions: jwt
 
 ### Chaincode Diagram
 [GOF Chaincode](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/de6093b1f429bd2f9f794c9a36fe766ca6a76996/documents/Chaincde%20diagram.jpg)
 
-### State Data
+### State Data (Validate with the code)
 ```javascript
 {
   boxId: uint,
