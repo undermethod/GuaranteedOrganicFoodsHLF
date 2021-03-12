@@ -16,8 +16,6 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 
 
 ### Requirements
-=======
-### Requirements (Check)
 
 - Track and trace avocados _from farm to table_
 - Allow various business actors to have access for transparency and traceability
