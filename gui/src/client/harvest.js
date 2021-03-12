@@ -15,33 +15,30 @@ class Harvest  extends React.Component {
     }
 
     submitHarvest(evt){
-        if(this.state.valueuser !== ''){
-            var url = 'http://localhost:9000/harvest';
-            var data = {
-                username: this.state.valueuser, 
-                weight: this.state.valueWeight,
-                location: this.state.valueLocation,
-                producerID:this.state.valueproducerID
-            };
+        var url = 'http://localhost:9000/harvest';
+        var data = {
+            username: this.state.valueuser, 
+            weight: this.state.valueWeight,
+            location: this.state.valueLocation,
+            producerID:this.state.valueproducerID
+        };
 
-            fetch(url, {
-            method: 'POST', // or 'PUT'
-            body: JSON.stringify(data), // data can be `string` or {object}!
-            headers:{
-                'Content-Type': 'application/json'
-            }
-            }).then(res => res.json())
-            .catch(error => console.error('Error:', error))
-            .then(response => {
-                if(response.error !== "Invalid user" ){
-                    console.log('User pass')
-                }else{
-                    this.setState({
-                        showAlertLogin: true,
-                    });
-                }
-        });
+        fetch(url, {
+        method: 'POST', 
+        body: JSON.stringify(data), 
+        headers:{
+            'Content-Type': 'application/json'
         }
+        }).then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => {
+                console.log('Esta es la respuesta del Harvest',response)
+                this.setState({
+                    valueWeight: "",
+                    valueLocation:"",
+                    valueproducerID:"",
+                })
+        });
     }
 
     handleCloseLoginAlert(evet){
@@ -57,19 +54,19 @@ class Harvest  extends React.Component {
                     <h3>HARVEST</h3>
                     <Form.Group>
                         <Form.Label className="marginTop15">Producer ID</Form.Label>
-                        <Form.Control type="text" placeholder="Enter ID" 
+                        <Form.Control type="text" placeholder="Enter ID" value={this.state.valueproducerID}
                             onChange={(e) =>
                                 this.setState({ valueproducerID: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Weight</Form.Label>
-                        <Form.Control type="text" placeholder="Enter weight" 
+                        <Form.Control type="text" placeholder="Enter weight" value={this.state.valueWeight}
                             onChange={(e) =>
                                 this.setState({ valueWeight: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Location</Form.Label>
-                        <Form.Control type="text" placeholder="Enter location" 
+                        <Form.Control type="text" placeholder="Enter location" value={this.state.valueLocation}
                             onChange={(e) =>
                                 this.setState({ valueLocation: e.target.value })
                             }

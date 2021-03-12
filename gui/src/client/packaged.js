@@ -1,24 +1,45 @@
 import React from 'react';
 import { Button, Form, Container} from 'react-bootstrap';
 import './css/base.css';
-
 class Packaged  extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
             pcklocation: "",
             pckpackerid:"",
-            valueBoxes:""
+            valueBoxes:[],
+            valueSelect:""
         }
-        this.submitHarvest = this.submitPackaged.bind(this);
+        this.submitPackaged = this.submitPackaged.bind(this);
+        this.handleChangeSelectBox = this.handleChangeSelectBox.bind(this);
     }
 
-    submitPackaged(evt){
+    submitPackaged(){
+        var url = 'http://localhost:9000/packaged';
+        var data = {
+            //ctx, role, boxId, loc, packagerId, timestamp
+            username: localStorage.userValue, 
+            boxId: this.state.valueSelect,
+            location: this.state.pcklocation,
+            packagerId: this.state.pckpackerid
+        };
+        console.log('Value log', this.state.valueSelect)
 
+        fetch(url, {
+        method: 'POST', 
+        body: JSON.stringify(data), 
+        headers:{
+            'Content-Type': 'application/json'
+        }
+        }).then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => {
+                console.log(response)
+        });
     }
 
     handleChangeSelectBox(event) {
-        this.setState({ valueBoxes: event.target.value });
+        this.setState({ valueSelect: event.target.value });
       }
     
 
@@ -29,15 +50,18 @@ class Packaged  extends React.Component {
         };
 
         fetch(url, {
-        method: 'POST', // or 'PUT'
-        body: JSON.stringify(data), // data can be `string` or {object}!
+        method: 'POST',
+        body: JSON.stringify(data),
         headers:{
             'Content-Type': 'application/json'
         }
         }).then(res => res.json())
         .catch(error => console.error('Error:', error))
         .then(response => {
-            console.log(response)
+                let valueArray = response;
+                console.log(valueArray)
+                valueArray= valueArray.filter(r => r.Record[0].state === "Harvest")
+                this.setState({ valueBoxes: valueArray });
         });
     }
 
@@ -49,19 +73,23 @@ class Packaged  extends React.Component {
                     <h3>PACKAGED</h3>
                     <Form.Group>
                     <Form.Label className="marginTop15">Select Box</Form.Label>
-                    <Form.Control as="select" value={this.state.valueBoxes} onChange={this.handleChangeSelectBox}>
+                    <Form.Control as="select" value={this.state.valueSelect} onChange={this.handleChangeSelectBox}>
                         <option value="">Select an option</option>
+                        {this.state.valueBoxes.map((box) => {
+                                return <option value={box.Record[0].boxId} key={box.Record[0].boxId}>{box.Record[0].boxId}</option>
+                            }
+                        )}
                     </Form.Control>
                         <Form.Label className="marginTop15">Location</Form.Label>
                         <Form.Control type="text" placeholder="Enter location" 
                             onChange={(e) =>
-                                this.setState({ valueWeight: e.pcklocation.value })
+                                this.setState({ pcklocation: e.target.value })
                             }
                         />
                         <Form.Label className="marginTop15">Packager ID</Form.Label>
                         <Form.Control type="text" placeholder="Enter packager id" 
                             onChange={(e) =>
-                                this.setState({ valueLocation: e.pckpackerid.value })
+                                this.setState({ pckpackerid: e.target.value })
                             }
                         />
                     </Form.Group>

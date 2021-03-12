@@ -21,8 +21,8 @@ class Login  extends React.Component {
             var data = {username: this.state.valueuser};
 
             fetch(url, {
-            method: 'POST', // or 'PUT'
-            body: JSON.stringify(data), // data can be `string` or {object}!
+            method: 'POST', 
+            body: JSON.stringify(data), 
             headers:{
                 'Content-Type': 'application/json'
             }
