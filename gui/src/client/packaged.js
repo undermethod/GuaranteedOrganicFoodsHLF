@@ -8,6 +8,7 @@ class Packaged  extends React.Component {
         this.state = { 
             pcklocation: "",
             pckpackerid:"",
+            valueBoxes:""
         }
         this.submitHarvest = this.submitPackaged.bind(this);
     }
@@ -15,6 +16,11 @@ class Packaged  extends React.Component {
     submitPackaged(evt){
 
     }
+
+    handleChangeSelectBox(event) {
+        this.setState({ valueBoxes: event.target.value });
+      }
+    
 
     componentDidMount() {
         var url = 'http://localhost:9000/querybox';
@@ -35,11 +41,6 @@ class Packaged  extends React.Component {
         });
     }
 
-    handleCloseLoginAlert(evet){
-        this.setState({
-            showAlertLogin: false,
-        });
-    }
 
     render() { 
         return ( 
@@ -47,6 +48,10 @@ class Packaged  extends React.Component {
                 <Form className="marginTop15">
                     <h3>PACKAGED</h3>
                     <Form.Group>
+                    <Form.Label className="marginTop15">Select Box</Form.Label>
+                    <Form.Control as="select" value={this.state.valueBoxes} onChange={this.handleChangeSelectBox}>
+                        <option value="">Select an option</option>
+                    </Form.Control>
                         <Form.Label className="marginTop15">Location</Form.Label>
                         <Form.Control type="text" placeholder="Enter location" 
                             onChange={(e) =>
