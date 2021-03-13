@@ -43,7 +43,7 @@ The transitions of the state machine are represented by the functions of the sma
 
 ### Architecture
 The architecture of GOF application contains 3 layers as the following picture shows. The first layer includes the components related to Hyperledger fabric to support the blockchain functionalities and chaincode. The second layer comprehends the server components that support the communication between the web application and the ledger considering the JwT and the API. Finally, the third layer contains the components of the web application to allow the different users the use of the blockchain system.
-![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20architecture.jpg?raw=true)
+![GOF architecture](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20architecture.jpg?raw=true)
 
 ### Chaincode Diagram
 ![GOF Chaincode](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/de6093b1f429bd2f9f794c9a36fe766ca6a76996/documents/Chaincde%20diagram.jpg?raw=true)
