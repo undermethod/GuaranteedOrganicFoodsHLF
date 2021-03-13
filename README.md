@@ -5,8 +5,9 @@
 ### Project Description
 Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Organic Foods (GOF) traces the exportation of avocados from Colombia to Canada, from the farmer to the consumer.
 
-<<<<<<< HEAD
+
 ### Benefits
+This solution supports the supply chain of avocados reducing the following risks:
 - Difficult to differentiate good players from bad
 - Many Organic Producers find their product mixed in with normal avocados
 - Farms often use non environmentally friendly techniques
@@ -16,7 +17,6 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 
 
 ### Requirements
-
 - Track and trace avocados _from farm to table_
 - Allow various business actors to have access for transparency and traceability
 - Immutable ledger tracing goods
@@ -25,39 +25,40 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
 ### State Machine Diagram
 ![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20state%20diagram.png?raw=true)
 
-### Transition Descriptions (Check)
-- uint boxId = harvest(producerId, weight, location, newPackagerId)
-- queryBox(boxId)
-- package(boxId, location)
-- bool exportInspectionPassed = exportInspect(boxId, location, inspectionAgentId, destinationCountry?)
-- sellDomestically(boxId)
-- compost(boxId)
-- ship(boxId, shipperId, containerId, originCountry, destinationCountry)
-- bool importInspectionPassed = importInspect(boxId, location, inspectionAgentId, originCountry)
-- distribute(boxId, distributorId, location, destinationRetailerId)
-- stock(boxId, shelfId)
-- sell(boxId, isFinalUnit)
+### Transition Descriptions
+The transitions of the state machine are represented by the functions of the smart contract listed below.
+- uint boxId = harvest(role, producerId, weight, location)
+- package(role, boxId, location, packagerId)
+- bool exportInspectionPassed = exportInspect(role, boxId, location, exporterId, inspectionAgentId, destinationCountry, passInspection)
+- ship(role, boxId, shipperId, containerId, originCountry, destinationCountry)
+- bool importInspectionPassed = importInspect(role, boxId, importerId, location, inspectionAgentId, originCountry, passInspection)
+- distribute(role, boxId, distributorId, location, destinationRetailerId)
+- stock(role, boxId, retialerId, location, shelfId)
+- sell(role, boxId, retailerId)
+- sellDomestically(role, boxId, exporterId)
+- compost(role, boxId)
 
 ### Flow Chart Diagram
 ![GOF flow chart](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20flow%20chart%20model.png?raw=true)
 
-### Architecture (Include)
-- Diagram of the layers and integration of the components
-- Architectural decisions: jwt
+### Architecture
+The architecture of GOF application contains 3 layers as the following picture shows. The first layer includes the components related to Hyperledger fabric to support the blockchain functionalities and chaincode. The second layer comprehends the server components that support the communication between the web application and the ledger considering the JwT and the API. Finally, the third layer contains the components of the web application to allow the different users the use of the blockchain system.
+![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20architecture.jpg?raw=true)
 
 ### Chaincode Diagram
 ![GOF Chaincode](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/de6093b1f429bd2f9f794c9a36fe766ca6a76996/documents/Chaincde%20diagram.jpg?raw=true)
 
-### State Data (Validate with the code)
+### State Data
 ```javascript
 {
+  
   boxId: uint,
+  state: string,
   created: datetime,
-  weight: uint,
-  currentRole: enum(Roles).Role,
   producer: {
     producerId: uint,
-    timestamp: datetime,
+    weight: uint,
+	timestamp: datetime,
     location: ""
   },
   packager: {
@@ -76,7 +77,6 @@ Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Org
   shipper: {
     shipperId: uint,
     timestamp: datetime,
-    location: "",
     containerId: uint,
     originCountry: "",
     destinationCountry: ""
