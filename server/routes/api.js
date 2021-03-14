@@ -1,26 +1,29 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  */
-
 'use strict';
 
 var express = require('express');
 var router = express.Router();
-var cors = require('cors')
+var cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const {validateUser} = require('./utils/validateUsers')
 const { Wallets, Gateway } = require('fabric-network'); //Creates a new gateway and use it to connect to the network
-const { response } = require('express');
-const ccpPath = path.resolve(__dirname, '..','..','hlf', 'gof-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+//const { response } = require('express');
+const { validateUser } = require('./utils/validateUsers');
+const { authLogin, authRefresh, authVerify } = require('../authentication/auth');
+
+const ccpPath = path.resolve(__dirname, '..', '..', 'hlf', 'gof-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
 let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
-const walletPath = path.resolve(__dirname, '..','..','hlf','gof','javascript','wallet');
-/* GET listing. */
-router.post('/harvest', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+const walletPath = path.resolve(__dirname, '..', '..', 'hlf', 'gof', 'javascript', 'wallet');
+
+router.post('/login', authLogin);
+
+router.post('/harvest', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -37,19 +40,19 @@ router.post('/harvest', async function(req, res, next) {
                 const result = await contract.submitTransaction('harvest', 'Producer', req.body.weight, req.body.location, req.body.producerID, Date.now())
                 console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
-router.post('/packaged', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+router.post('/packaged', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -64,20 +67,20 @@ router.post('/packaged', async function(req, res, next) {
                 const result = await contract.submitTransaction('pack', 'Packager', req.body.boxId, req.body.location, req.body.packagerId, Date.now())
                 console.log(`Transaction packaged has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
 
-router.post('/export', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+router.post('/export', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -93,31 +96,30 @@ router.post('/export', async function(req, res, next) {
                 console.log(`ctx, role, boxId, loc, packagerId, timestamp`)
                 console.log(`'pack', 'Packaged', ${req.body.boxId}, ${req.body.exporterId}, ${req.body.loc} , ${req.body.inspectionAgentId}, 
                 ${req.body.destinationCountry}, ${req.body.passInspection},`)
-                const result = await contract.submitTransaction('exportInspect', 'Exporter', 
-                    req.body.boxId, 
-                    req.body.exporterId, 
-                    req.body.loc, 
+                const result = await contract.submitTransaction('exportInspect', 'Exporter',
+                    req.body.boxId,
+                    req.body.exporterId,
+                    req.body.loc,
                     req.body.inspectionAgentId,
                     req.body.destinationCountry,
                     req.body.passInspection,
                     Date.now())
                 console.log(`Transaction export has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
 
-
-router.post('/ship', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+router.post('/ship', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -132,29 +134,29 @@ router.post('/ship', async function(req, res, next) {
                 // ship(ctx, role, boxId, shipperId, containerId, originCountry, destinationCountry, timestamp)
                 console.log(`'ship', 'Shipper', ${req.body.boxId}, ${req.body.shipperId}, ${req.body.containerId} , ${req.body.originCountry}, 
                 ${req.body.destinationCountry}`)
-                const result = await contract.submitTransaction('ship', 'Shipper', 
-                    req.body.boxId, 
-                    req.body.shipperId, 
-                    req.body.containerId, 
+                const result = await contract.submitTransaction('ship', 'Shipper',
+                    req.body.boxId,
+                    req.body.shipperId,
+                    req.body.containerId,
                     req.body.originCountry,
                     req.body.destinationCountry,
                     Date.now())
                 console.log(`Transaction ship has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
 
-router.post('/imported', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+router.post('/imported', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -169,30 +171,30 @@ router.post('/imported', async function(req, res, next) {
                 //importInspect(ctx, role, boxId, importerId, loc, inspectionAgentId, originCountry, passInspection, timestamp)
                 console.log(`'importInspect', 'Importer', ${req.body.boxId}, ${req.body.shipperId}, ${req.body.containerId} , ${req.body.originCountry}, 
                 ${req.body.destinationCountry}`)
-                const result = await contract.submitTransaction('importInspect', 'Importer', 
-                    req.body.boxId, 
-                    req.body.importerId, 
-                    req.body.loc, 
+                const result = await contract.submitTransaction('importInspect', 'Importer',
+                    req.body.boxId,
+                    req.body.importerId,
+                    req.body.loc,
                     req.body.inspectionAgentId,
                     req.body.originCountry,
                     req.body.passInspection,
                     Date.now())
                 console.log(`Transaction importInspect has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
 
-router.post('/distributed', async function(req, res, next) {
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+router.post('/distributed', async function (req, res, next) {
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -206,31 +208,30 @@ router.post('/distributed', async function(req, res, next) {
                 const contract = network.getContract('gof');
                 //distribute(ctx, role, boxId, distributorId, loc, destinationRetailerId, timestamp)
                 console.log(`'distribute', 'Distributor', ${req.body.boxId}, ${req.body.distributorId}, ${req.body.loc} , ${req.body.destinationRetailerId}`)
-                const result = await contract.submitTransaction('distribute', 'Distributor', 
-                    req.body.boxId, 
-                    req.body.distributorId, 
-                    req.body.loc, 
+                const result = await contract.submitTransaction('distribute', 'Distributor',
+                    req.body.boxId,
+                    req.body.distributorId,
+                    req.body.loc,
                     req.body.destinationRetailerId,
                     Date.now())
                 console.log(`Transaction Distributed has been evaluated, result is: ${result.toString()}`);
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to evaluate transaction: ${error}`);
-                res.json({error: 'Error user'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Error user' });
+            }
+        }
+    });
 });
 
-
-router.post('/querybox', async function(req, res, next) {
+router.post('/querybox', async function (req, res, next) {
     let d = new Date();
     let timestamp = d.getTime();
-    validateUser(req.body.username).then( async isvalid => {
-        if(!isvalid){
-            res.json({error: 'Invalid user'});
-        }else{
+    validateUser(req.body.username).then(async isvalid => {
+        if (!isvalid) {
+            res.json({ error: 'Invalid user' });
+        } else {
             try {
                 const wallet = await Wallets.newFileSystemWallet(walletPath);
                 // Create a new gateway for connecting to our peer node.
@@ -244,12 +245,13 @@ router.post('/querybox', async function(req, res, next) {
                 const result = await contract.evaluateTransaction('queryAllBoxes')
                 debugger
                 //changeBoxState(ctx, boxId, newState)
-                res.json(JSON.parse(result.toString()));  
+                res.json(JSON.parse(result.toString()));
             } catch (error) {
                 console.error(`Failed to query box: ${error}`);
-                res.json({error: 'Query box'});
-            }   
-        }    
-    });    
+                res.json({ error: 'Query box' });
+            }
+        }
+    });
 });
+
 module.exports = router;
