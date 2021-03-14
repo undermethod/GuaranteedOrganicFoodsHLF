@@ -2,9 +2,12 @@
 ## Hyperledger Fabric - Guaranteed Organic Foods
 
 ### Installation Instructions
-1. Navigate to "/hlf/gof/", then execute "./gof-hlf-launcher.sh" to run the Hyperledger Fabric network
-1. Navigate to "/server/", then execute "rm -rf node_modules package-lock.json ; npm i ; node app" to run the Express server
-1. Navigate to "/gui/", then execute "rm -rf node_modules package-lock.json ; npm i ; npm start" to run the React front-end
+1. Navigate to "/hlf/gof/"
+1. Execute "./gof-hlf-launcher.sh" to run the Hyperledger Fabric network
+1. Navigate to "/server/"
+1. Execute "rm -rf node_modules package-lock.json ; npm i ; node app" to run the Express server
+1. Navigate to "/gui/"
+1. Execute "rm -rf node_modules package-lock.json ; npm i ; npm start" to run the React front-end
 
 ### Project Description
 Supply Chain use case for Hyperledger Fabric for building a dApp: Guaranteed Organic Foods (GOF) traces the exportation of avocados from Colombia to Canada, from the farmer to the consumer.
@@ -25,7 +28,7 @@ This solution supports the supply chain of avocados reducing the following risks
 - Keep records for the Purchase Order (in our case Box ID), box weight, timestamps, historical statuses and current status
 
 ### State Machine Diagram
-High-level states and transitions (detailed breakdown found below under _State Data_ and _Transition Descriptions_ respectively):
+High-level states and transitions (detailed breakdown found below under _State Data_ and _Transition Descriptions_ respectively):\
 ![GOF state diagram](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20state%20diagram.png?raw=true)
 
 ### Role Descriptions
@@ -39,7 +42,7 @@ High-level states and transitions (detailed breakdown found below under _State D
 - Consumer: purchaser of the individual avocados within the box
 
 ### Transition Descriptions
-The transitions of the state machine are represented by the functions of the smart contract listed below.
+The transitions of the state machine are represented by these functions of the smart contract:
 - initLedger: initialising "initialState" to be "READYPICKUP", and initial "id" to be "1"
 - harvest: performed by Role "PRODUCER", moves from "READYPICKUP" to "HARVEST"
 - pack: performed by Role "PACKAGER", moves from "HARVEST" to "PACKAGED"
@@ -56,15 +59,15 @@ The transitions of the state machine are represented by the functions of the sma
 - queryAllBoxes: returns JSON string of all boxes
 
 ### Flow Chart Diagram
-High-level system flow during operation:
+High-level system flow during operation:\
 ![GOF flow chart](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20flow%20chart%20model.png?raw=true)
 
 ### Architecture
-The architecture of GOF application contains 3 layers as the following picture shows. The first layer includes the components related to Hyperledger Fabric to support the blockchain functionalities and chaincode. The second layer comprehends the server components that support the communication between the web application and the ledger considering the JWT and the API. Finally, the third layer contains the components of the web application to allow the different users the use of the GOF system:
+The architecture of GOF application contains 3 layers as the following picture shows. The first layer includes the components related to Hyperledger Fabric to support the blockchain functionalities and chaincode. The second layer comprehends the server components that support the communication between the web application and the ledger considering the JWT and the API. Finally, the third layer contains the components of the web application to allow the different users the use of the GOF system:\
 ![GOF architecture](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/GOF%20architecture.jpg?raw=true)
 
 ### Chaincode Diagram
-The users are the Roles from above that interact with the chaincode after packaging, installing, approving and committing:
+The users are the Roles from above that interact with the chaincode after packaging, installing, approving and committing:\
 ![GOF Chaincode](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/Chaincde%20diagram.jpg?raw=true)
 
 ### State Data
@@ -156,35 +159,35 @@ const box = [{
 ```
 
 ### Screenshots
-Login:
+Login:\
 ![GOF login screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/login.png?raw=true)
 
-When attempting to use an invalid username:
+When attempting to use an invalid username:\
 ![GOF nonexistentuser screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/nonexistentuser.png?raw=true)
 
-When logging in with a valid username, but no JWT token was passed and the response has a 401 _Unauthorized_ status:
+When logging in with a valid username, but no JWT token was passed and the response has a 401 _Unauthorized_ status:\
 ![GOF invalid-password screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/invalid-password.png?raw=true)
 
-Upon successful login with a valid username and password, the user is presented with the GOF home screen with navigation (only able to access tabs for which the currently logged-in user has been granted access):
+Upon successful login with a valid username and password, the user is presented with the GOF home screen with navigation (only able to access tabs for which the currently logged-in user has been granted access):\
 ![GOF home screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/home.png?raw=true)
 
-Harvest:
+Harvest:\
 ![GOF harvest screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/harvest.png?raw=true)
 
-For each "Submit" (_Harvest_ above and each below), a confirmation appears for Hyperledger Fabric's transaction:
+For each "Submit" (_Harvest_ above and each below), a confirmation appears for Hyperledger Fabric's transaction:\
 ![GOF success screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/success.png?raw=true)
 
-Package:
+Package:\
 ![GOF package screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/package.png?raw=true)
 
-Export:
+Export:\
 ![GOF export screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/export.png?raw=true)
 
-Ship:
+Ship:\
 ![GOF ship screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/ship.png?raw=true)
 
-Import:
+Import:\
 ![GOF import screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/import.png?raw=true)
 
-Distribute:
+Distribute:\
 ![GOF distribute screenshot](https://github.com/undermethod/GuaranteedOrganicFoodsHLF/blob/main/documents/screenshots/distribute.png?raw=true)
