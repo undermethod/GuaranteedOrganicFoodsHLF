@@ -5,7 +5,7 @@ set -e
 
 gofd=$(pwd)
 cd ~
-curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- 2.2.2
+$gofd/../hlf-bootstrap.sh 2.2.2
 cd $gofd/../chaincode/gof/javascript
 rm -rf node_modules package-lock.json
 npm i
