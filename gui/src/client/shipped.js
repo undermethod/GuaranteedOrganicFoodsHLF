@@ -89,7 +89,7 @@ class Shipped  extends React.Component {
         return ( 
             <Container>
                 <Form className="marginTop15">
-                    <h3>PACKAGED</h3>
+                    <h3>SHIPPED</h3>
                     <Form.Group>
                         <Form.Label className="marginTop15">Select Box</Form.Label>
                         <Form.Control as="select" value={this.state.valueSelect} onChange={this.handleChangeSelectBox}>
